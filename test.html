@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<input type="text" id="input">
+	<button id="button">CLICK</button>
+	<div>
+		<p>全部消息</p>
+		<ul id="all"></ul>
+	</div>
+	<div>
+		<p>已读消息</p>
+		<ul id="read"></ul>
+	</div>
+	<div>
+		<p>未读消息</p>
+		<ul id="unread"></ul>
+	</div>
+	<script>
+		var items = [];
+
+		document.getElementById('input').addEventListener('keydown', function (e) {
+			if (e.keyCode == 13) {
+				const value = e.target.value;
+				addNewItem(value);
+			}
+		})
+
+		document.getElementById('button').addEventListener('click', function (e) {
+			const value = document.getElementById('input').value;
+			addNewItem(value);
+		})
+
+		document.getElementById('all').addEventListener('click', function (e) {
+			proxyUlClick (e);
+		})
+
+		function addNewItem (value) {
+			if (value == '' && value.trim() == '') {
+				return ;
+			}
+			const content = value.trim();
+			if (items.some(item => item.content == content)) {
+				return ;
+			}
+			items.push({
+				id: items.length,
+				content: content,
+				status: 0
+			});
+			proxyProcessItems ();
+		}
+
+		function proxyProcessItems () {
+			loadAllItems();
+			loadReadItems();
+			loadUnReadItems();
+		}
+
+		function proxyUlClick (e) {
+			const triggeredValue = e.target.innerHTML;
+			var parentDiv = document.getElementsByClassName('readall');
+			let newArr = items.map(item => {
+				if (item.content == triggeredValue) {
+					console.log(item.content)
+					item.status = !item.status;
+				}
+				return item;
+			})
+			items = newArr;
+			proxyProcessItems ();
+		}
+
+		function loadAllItems () {
+			var all = document.getElementById('all');
+			all.innerHTML = '';
+			var innerHTML = '';
+			for (var i = 0; i < items.length; i ++) {
+				innerHTML += '<li class="readall">'+ items[i]['content'] +'</li>';
+			}
+			all.innerHTML = innerHTML;
+		}
+
+		function loadReadItems () {
+			var read = document.getElementById('read');
+			read.innerHTML = '';
+			var innerHTML = '';
+			for (var i = 0; i < items.length; i ++) {
+				if (items[i]['status'] == 1) {
+					innerHTML += '<li>'+ items[i]['content'] +'</li>';
+				}
+			}
+			read.innerHTML = innerHTML;
+		}
+
+		function loadUnReadItems () {
+			var unread = document.getElementById('unread');
+			unread.innerHTML = '';
+			var innerHTML = '';
+			for (var i = 0; i < items.length; i ++) {
+				if (items[i]['status'] == 0) {
+					innerHTML += '<li>'+ items[i]['content'] +'</li>';
+				}
+			}
+			unread.innerHTML = innerHTML;
+		}
+	</script>
+</body>
+</html>
